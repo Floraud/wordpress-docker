@@ -1,7 +1,7 @@
 services:
-  db:
-    image: mariadb:latest
-    # Stockage des données persistantes
+  mariadb:
+    image: mariadb:11.1.3-jammy
+    container_name: mariadb
     volumes:
       - db_data:/var/lib/mysql
     environment:
@@ -9,40 +9,32 @@ services:
       - MYSQL_DATABASE=wordpress
       - MYSQL_USER=wordpress
       - MYSQL_PASSWORD=wordpress
-    networks:
-      - app-network
 
   wordpress:
     depends_on: 
-      - db
-    image: wordpress:latest
+      - mariadb
+    # image fpm nécessaire pour communication entre fastcgi wordpress et nginx
+    image: wordpress:6.4.1-fpm-alpine
+    container_name: wordpress
     volumes:
       - wp_data:/var/www/html
     environment:
-      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_HOST=mariadb
       - WORDPRESS_DB_USER=wordpress
       - WORDPRESS_DB_PASSWORD=wordpress
       - WORDPRESS_DB_NAME=wordpress
-    networks:
-      - app-network
 
   nginx:
     depends_on: 
       - wordpress
-    image: nginx:1.15.12-alpine
-    container_name: webserver
+    image: nginx:1.25.3-alpine
+    container_name: nginx
     ports:
-      - "80:80"
+      - 80:80
     volumes:
       - wp_data:/var/www/html
       - ./nginx/:/etc/nginx/conf.d
-    networks:
-      - app-network
 
 volumes:
   db_data:
   wp_data:
-
-networks:
-  app-network:
-    driver: bridge  
