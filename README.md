@@ -4,7 +4,7 @@ Cette infrastructure doit répondre au principe de l'IaC est être facilement re
 
 # To-do list
 - [ ]  Gestion des secrets
-- [ ]  Sites multiples basé sur nginx mais compartimentés
+- [ ]  Sites multiples basés sur nginx mais compartimentés
 	- [Exemple de comment séparer les réseaux](https://www.reddit.com/r/docker/comments/tvvdrd/multiple_mariadbmysql_containers_on_the_same/?rdt=54580)
 - [ ] Certbot (nécessite vps et domaine)
 - [ ] Sites multiples
