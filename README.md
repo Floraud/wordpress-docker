@@ -11,7 +11,25 @@ Cette infrastructure doit répondre au principe de l'IaC est être facilement re
 
 # Architecture
 ## Diagram
-*wip*
+Objectif
+```mermaid
+graph TD;
+
+linkStyle default interpolate basis;
+
+user-->nginx;
+nginx-->wordpress_1;
+nginx-->wordpress_2;
+
+subgraph docker_network_2
+    wordpress_2-->mariadb_2;
+end
+
+subgraph docker_network_1
+    wordpress_1-->mariadb_1;
+end
+    
+```
 
 ## Network flow Matrix
 *wip*
