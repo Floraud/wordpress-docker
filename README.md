@@ -5,7 +5,8 @@ Cette infrastructure doit répondre au principe de l'IaC est être facilement re
 # To-do list
 - [ ] Gestion des secrets
 - [ ] Certbot (nécessite vps et domaine)
-- [ ] Comment assurer le monitoring
+- [ ] Comment assurer le monitoring, les backups et sauvegardes ?
+- [ ] Est-ce possible de pré-remplir l'installation du WordPress ?
 
 # Architecture
 ## Diagram
