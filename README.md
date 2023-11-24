@@ -1,32 +1,32 @@
 # Présentation
-L'objectif est d'avoir une infrastructure minimaliste disposant du maximum de containers wordpress et mariadb derrière un container nginx pour exposer des sites en https à moindre coût.
+L'objectif est d'avoir une infrastructure minimaliste disposant du maximum de containers wordpress et mariadb derrière un container reverse-proxy pour exposer des sites en https à moindre coût.
 Cette infrastructure doit répondre au principe de l'IaC est être facilement redéployable pour migrer (on premise par exemple) ou en cas de problème avec le moins d'actions manuelles possibles.
 
 # To-do list
-- [ ]  Gestion des secrets
-- [ ]  Sites multiples basés sur nginx mais compartimentés
-	- [Exemple de comment séparer les réseaux](https://www.reddit.com/r/docker/comments/tvvdrd/multiple_mariadbmysql_containers_on_the_same/?rdt=54580)
+- [ ] Gestion des secrets
 - [ ] Certbot (nécessite vps et domaine)
-- [ ] Sites multiples
+- [ ] Comment assurer le monitoring
 
 # Architecture
 ## Diagram
-Objectif
 ```mermaid
 graph TD;
 
 linkStyle default interpolate basis;
 
-user-->nginx;
-nginx-->wordpress_1;
-nginx-->wordpress_2;
+user-->traefik;
 
-subgraph docker_network_2
-    wordpress_2-->mariadb_2;
-end
+subgraph container
+	traefik-->wordpress_1;
+	traefik-->wordpress_2;
 
-subgraph docker_network_1
-    wordpress_1-->mariadb_1;
+	subgraph docker_network_2
+		wordpress_2-->mariadb_2;
+	end
+
+	subgraph docker_network_1
+		wordpress_1-->mariadb_1;
+	end
 end
     
 ```
@@ -38,9 +38,8 @@ end
 - **Les alpines sont plus légères et donc à prioriser**
 - **Explicitez le numéro de version**
 
-### wordpress
-[doc avec les variances](https://hub.docker.com/_/wordpress)
-> This variant contains PHP-FPM, which is a FastCGI implementation for PHP. See the PHP-FPM website for more information about PHP-FPM.
+### Reverse Proxy
+- Traefik > nginx car le renouvellement de certificat est pensé dans Traefik et que c'est une solution bien adaptée aux containers.
 
 ## Questionnement
 - MariaDB en container ? **OK pour  site simple à faible criticité pour optimiser coût**
@@ -77,17 +76,12 @@ end
 
 ## Monitoring
 
-## Logging
-
 ## Troubleshooting
 - Voir les logs d'un container : `sudo docker logs <name>`
 - Contrôler les containers toujours présents : `sudo docker ps`
 - Contrôler les volumes toujours présents : `sudo docker volume ls`
 - Relancer les containers : `sudo docker-compose up -d`
-
-# Exploitation Wordpress
-
-# Incidents
+- **Attention !** Cette commande est faite pour tout supprimer et recréer, containers comme volumes : `sudo docker-compose down --remove-orphans && sudo docker volume prune -f && sudo docker compose up`
 
 # Sources et ressources
 - [nginx.conf référencé par le docker hub de wordpress](https://gist.github.com/md5/d9206eacb5a0ff5d6be0)
