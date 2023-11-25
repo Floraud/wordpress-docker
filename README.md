@@ -1,32 +1,35 @@
 # Présentation
 L'objectif est d'avoir une infrastructure minimaliste disposant du maximum de containers wordpress et mariadb derrière un container reverse-proxy pour exposer des sites en https à moindre coût.
-Cette infrastructure doit répondre au principe de l'IaC est être facilement redéployable pour migrer (on premise par exemple) ou en cas de problème avec le moins d'actions manuelles possibles.
+Cette infrastructure doit répondre au principe de l'IaC et être facilement redéployable, pour migrer (on premise par exemple) ou en cas d'incident, avec le moins d'actions manuelles possibles.
 
 # To-do list
+- [ ] Vérifier l'étanchéité des réseaux créés et faire un diagramme.
 - [ ] Gestion des secrets
-- [ ] Certbot (nécessite vps et domaine)
+- [ ] Certbot
+- [ ] Sécurité ?
+	- [ ] fail2ban sur le ssh de l'host ? = ansible et en profiter au début pour installer docker et uploader le fichier ?
+	- [ ] Qu'existe-t-il au niveau du container ?
 - [ ] Comment assurer le monitoring, les backups et sauvegardes ?
-- [ ] Est-ce possible de pré-remplir l'installation du WordPress ?
+- [ ] Comment assurer upgrade
+- [ ] Est-ce possible de pré-remplir l'installation du WordPress sinon risque à l'install qu'une personne autre prenne le contrôle
 
 # Architecture
-## Diagram
+## Diagramme
 ```mermaid
 graph TD;
 
-linkStyle default interpolate basis;
-
-user-->traefik;
+user---traefik;
 
 subgraph container
-	traefik-->wordpress_1;
-	traefik-->wordpress_2;
+	traefik---wordpress_1;
+	traefik---wordpress_2;
 
 	subgraph docker_network_2
-		wordpress_2-->mariadb_2;
+		wordpress_2---mariadb_2;
 	end
 
 	subgraph docker_network_1
-		wordpress_1-->mariadb_1;
+		wordpress_1---mariadb_1;
 	end
 end
     
@@ -36,7 +39,6 @@ end
 *wip*
 
 ## Images docker
-- **Les alpines sont plus légères et donc à prioriser**
 - **Explicitez le numéro de version**
 
 ### Reverse Proxy
