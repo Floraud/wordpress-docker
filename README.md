@@ -5,10 +5,11 @@ Cette infrastructure doit répondre au principe de l'IaC et être facilement red
 # To-do list
 - [ ] Préremmplir l'installation wordpress avec wordpress cli ou en alimentant en amont avec un fichier .php
 - [ ] Gestion des secrets
-- [ ] Certbot
 - [ ] Sécurité ?
+	- [ ] Peut-être améliorer la sécurité de traefik : `--providers.docker=true`
 	- [ ] fail2ban sur le ssh de l'host ? = ansible et en profiter au début pour installer docker et uploader le fichier ?
 	- [ ] Qu'existe-t-il au niveau du container ?
+- [ ] Certbot
 - [ ] comment assurer les backups et sauvegardes ?
 - [ ] Comment assurer upgrade
 
