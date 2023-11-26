@@ -104,6 +104,3 @@ end
 - Contrôler les volumes toujours présents : `sudo docker volume ls`
 - Relancer les containers : `sudo docker-compose up -d`
 - **Attention !** Cette commande est faite pour tout supprimer et recréer, containers comme volumes : `sudo docker-compose down --remove-orphans && sudo docker volume prune -f && sudo docker network prune -f && sudo docker compose up`
-
-# Sources et ressources
-- [nginx.conf référencé par le docker hub de wordpress](https://gist.github.com/md5/d9206eacb5a0ff5d6be0)
