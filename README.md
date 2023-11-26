@@ -97,7 +97,7 @@ end
 
 </details>
 
-## Troubleshooting
+# Troubleshooting
 - Voir les logs d'un container : `sudo docker logs <name>`
 - Contrôler les containers toujours présents : `sudo docker ps`
 - Contrôler les volumes toujours présents : `sudo docker volume ls`
