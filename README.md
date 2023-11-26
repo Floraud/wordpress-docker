@@ -3,16 +3,15 @@ L'objectif est d'avoir une infrastructure minimaliste disposant du maximum de co
 Cette infrastructure doit répondre au principe de l'IaC et être facilement redéployable, pour migrer (on premise par exemple) ou en cas d'incident, avec le moins d'actions manuelles possibles.
 
 # To-do list
-- [ ] Préremmplir l'installation wordpress avec wordpress cli ou en alimentant en amont avec un fichier .php
-	- wordpress:cli bof car quelques secondes où le site est en ligne avec l'install pas faite.
 - [ ] Gestion des secrets
 - [ ] Sécurité ?
-	- [ ] Peut-être améliorer la sécurité de traefik : `--providers.docker=true`
+	- [ ] Peut-être améliorer la sécurité de traefik car découverte `--providers.docker=true` et il serait peut-être plus pertinent de passer par l'API.
 	- [ ] fail2ban sur le ssh de l'host ? = ansible et en profiter au début pour installer docker et uploader le fichier ?
 	- [ ] Qu'existe-t-il au niveau du container ?
 - [ ] Certbot
-- [ ] comment assurer les backups et sauvegardes ?
-- [ ] Comment assurer upgrade
+- [ ] Comment assurer les backups ?
+- [ ] Process de restauration
+- [ ] Process d'upgrade
 
 # Architecture
 ## Diagramme
