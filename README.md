@@ -4,6 +4,7 @@ Cette infrastructure doit répondre au principe de l'IaC et être facilement red
 
 # To-do list
 - [ ] Préremmplir l'installation wordpress avec wordpress cli ou en alimentant en amont avec un fichier .php
+	- wordpress:cli bof car quelques secondes où le site est en ligne avec l'install pas faite.
 - [ ] Gestion des secrets
 - [ ] Sécurité ?
 	- [ ] Peut-être améliorer la sécurité de traefik : `--providers.docker=true`

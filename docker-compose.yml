@@ -4,7 +4,7 @@ services:
     restart: "always"
     command:
       - "--api.insecure=true"  # A désactiver pour la mise en prod
-      - "--providers.docker=true"
+      - "--providers.docker=true"  # Voir pour peut-être désactiver pour la mise en prod et passer par l'API docker si plus sécurisé
       - "--entrypoints.web-secure.address=:443"
     ports:
       - "80:80"
@@ -39,7 +39,7 @@ services:
     restart: "always"
     container_name: "wordpress-1"
     volumes:
-      - "wp-data-1:/var/www/html/wordpress-1"
+      - "wp-data-1:/var/www/html"
     environment:
       - "WORDPRESS_DB_HOST=mariadb-1"
       - "WORDPRESS_DB_USER=wordpress"
@@ -48,7 +48,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.wordpress-1.rule=Host(`site1.com`)"  # Faire l'enregistrement sur le fichier host de site1.com avec l'IP du host
-      - "traefik.http.services.wordpress-1.loadbalancer.server.port=80"
+      - "traefik.http.services.wordpress-1.loadbalancer.server.port=80"  # Sert uniquement à rediriger vers le port 80
       - "traefik.http.routers.wordpress-1.tls=true"
     networks:
       - "wp1-net"
@@ -76,7 +76,7 @@ services:
     restart: "always"
     container_name: "wordpress-2"
     volumes:
-      - "wp-data-2:/var/www/html/wordpress-2"
+      - "wp-data-2:/var/www/html"
     environment:
       - "WORDPRESS_DB_HOST=mariadb-2"
       - "WORDPRESS_DB_USER=wordpress"
@@ -89,6 +89,46 @@ services:
       - "traefik.http.routers.wordpress-2.tls=true"
     networks:
       - "wp2-net"
+
+  wordpress-cli-1:
+    depends_on:
+      - "mariadb-1"
+      - "wordpress-1"
+    image: "wordpress:cli"
+    container_name: "wordpress-cli-1"
+    environment:
+      - "WORDPRESS_DB_HOST=mariadb-1"
+      - "WORDPRESS_DB_USER=wordpress"
+      - "WORDPRESS_DB_PASSWORD=wordpress"
+      - "WORDPRESS_DB_NAME=wordpress"
+    volumes:
+      - "wp-data-1:/var/www/html"
+    entrypoint: sh
+    command: -c 'sleep 20; wp core install --url="site1.com" --title="toto" --admin_name=toto --admin_password="toto" --admin_email=toto@toto.com'
+    networks:
+      wp1-net:
+    labels:
+      - "traefik.enable=false"
+
+  wordpress-cli-2:
+    depends_on:
+      - "mariadb-2"
+      - "wordpress-2"
+    image: "wordpress:cli"
+    container_name: "wordpress-cli-2"
+    environment:
+      - "WORDPRESS_DB_HOST=mariadb-2"
+      - "WORDPRESS_DB_USER=wordpress"
+      - "WORDPRESS_DB_PASSWORD=wordpress"
+      - "WORDPRESS_DB_NAME=wordpress"
+    volumes:
+      - "wp-data-2:/var/www/html"
+    entrypoint: sh
+    command: -c 'sleep 20; wp core install --url="site2.com" --title="tata" --admin_name=tata --admin_password="tata" --admin_email=tata@tata.com'
+    networks:
+      wp2-net:
+    labels:
+      - "traefik.enable=false"
 
 volumes:
   db-data-1:
