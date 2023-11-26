@@ -39,7 +39,7 @@ services:
     restart: "always"
     container_name: "wordpress-1"
     volumes:
-      - "wp-data-1:/var/www/html"
+      - "wp-data-1:/var/www/html/wordpress-1"
     environment:
       - "WORDPRESS_DB_HOST=mariadb-1"
       - "WORDPRESS_DB_USER=wordpress"
@@ -76,7 +76,7 @@ services:
     restart: "always"
     container_name: "wordpress-2"
     volumes:
-      - "wp-data-2:/var/www/html"
+      - "wp-data-2:/var/www/html/wordpress-2"
     environment:
       - "WORDPRESS_DB_HOST=mariadb-2"
       - "WORDPRESS_DB_USER=wordpress"
