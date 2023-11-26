@@ -3,15 +3,16 @@ L'objectif est d'avoir une infrastructure minimaliste disposant du maximum de co
 Cette infrastructure doit répondre au principe de l'IaC et être facilement redéployable, pour migrer (on premise par exemple) ou en cas d'incident, avec le moins d'actions manuelles possibles.
 
 # To-do list
-- [ ] Vérifier l'étanchéité des réseaux créés et faire un diagramme.
+- [ ] Préremmplir l'installation wordpress avec wordpress cli ou en alimentant en amont avec un fichier .php
+	- wordpress:cli bof car quelques secondes où le site est en ligne avec l'install pas faite.
 - [ ] Gestion des secrets
-- [ ] Certbot
 - [ ] Sécurité ?
+	- [ ] Peut-être améliorer la sécurité de traefik : `--providers.docker=true`
 	- [ ] fail2ban sur le ssh de l'host ? = ansible et en profiter au début pour installer docker et uploader le fichier ?
 	- [ ] Qu'existe-t-il au niveau du container ?
-- [ ] Comment assurer le monitoring, les backups et sauvegardes ?
+- [ ] Certbot
+- [ ] comment assurer les backups et sauvegardes ?
 - [ ] Comment assurer upgrade
-- [ ] Est-ce possible de pré-remplir l'installation du WordPress sinon risque à l'install qu'une personne autre prenne le contrôle
 
 # Architecture
 ## Diagramme
@@ -36,7 +37,16 @@ end
 ```
 
 ## Network flow Matrix
-*wip*
+***WIP***
+
+|Source|Destination  |Port          |Flux          |
+|------|-------------|--------------|--------------|
+|any   |server       |tcp/80 tcp/443|accès web     |
+|any   |server       |tcp/22        |administration|
+|server|any          |tcp/80 tcp/443|repo update   |
+|server|1.1.1.1 other|tcp/53 udp/53 |DNS           |
+|server|timesrv1 et 2|udp/123       |NTP           |
+
 
 ## Images docker
 - **Explicitez le numéro de version**
@@ -77,14 +87,24 @@ end
 
 ## Process de Restauration
 
-## Monitoring
+<details><summary>
 
-## Troubleshooting
+# Monitoring
+</summary>
+
+- `docker stats` : pour savoir où on en est en terme de ressources. 
+- ~~Zabbix~~ : trop gourmand car nécessite une BDD en plus.
+- ~~Prometheus~~ : Consomme aussi beaucoup de ressources d'après les retours
+- ~~Cadvisor~~ : demande d'être là en live.
+
+</details>
+
+# Troubleshooting
 - Voir les logs d'un container : `sudo docker logs <name>`
 - Contrôler les containers toujours présents : `sudo docker ps`
 - Contrôler les volumes toujours présents : `sudo docker volume ls`
 - Relancer les containers : `sudo docker-compose up -d`
-- **Attention !** Cette commande est faite pour tout supprimer et recréer, containers comme volumes : `sudo docker-compose down --remove-orphans && sudo docker volume prune -f && sudo docker compose up`
+- **Attention !** Cette commande est faite pour tout supprimer et recréer, containers comme volumes : `sudo docker-compose down --remove-orphans && sudo docker volume prune -f && sudo docker network prune -f && sudo docker compose up`
 
 # Sources et ressources
 - [nginx.conf référencé par le docker hub de wordpress](https://gist.github.com/md5/d9206eacb5a0ff5d6be0)
