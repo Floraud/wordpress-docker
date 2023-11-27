@@ -9,6 +9,7 @@ Cette infrastructure doit répondre au principe de l'IaC et être facilement red
 	- [ ] fail2ban sur le ssh de l'host ? = ansible et en profiter au début pour installer docker et uploader le fichier ?
 	- [ ] Qu'existe-t-il au niveau du container ?
 - [ ] Certbot
+- [ ] Séparer les docker-compose et merge les lez fichiers.
 - [ ] Comment assurer les backups ?
 - [ ] Process de restauration
 - [ ] Process d'upgrade
