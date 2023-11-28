@@ -47,9 +47,9 @@ services:
       - "wp-data-1:/var/www/html"
     environment:
       - "WORDPRESS_DB_HOST=mariadb-1"
-      - "WORDPRESS_DB_USER=wordpress"
-      - "WORDPRESS_DB_PASSWORD=wordpress"
-      - "WORDPRESS_DB_NAME=wordpress"
+      - "WORDPRESS_DB_USER_FILE=/run/secrets/db1-user"
+      - "WORDPRESS_DB_PASSWORD_FILE=/run/secrets/db1-pwd-user"
+      - "WORDPRESS_DB_NAME_FILE=/run/secrets/db1-db"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.wordpress-1.rule=Host(`site1.com`)"  # Faire l'enregistrement sur le fichier host de site1.com avec l'IP du host
@@ -57,6 +57,10 @@ services:
       - "traefik.http.routers.wordpress-1.tls=true"
     networks:
       - "wp1-net"
+    secrets:
+      - "db1-db"
+      - "db1-user"
+      - "db1-pwd-user"
 
   wordpress-cli-1:
     depends_on:
@@ -147,10 +151,10 @@ networks:
 
 secrets:
   db1-root:
-    file: "db1-root.txt"
+    file: "db1-secret/db1-root.txt"
   db1-db:
-    file: "db1-db.txt"
+    file: "db1-secret/db1-db.txt"
   db1-user:
-    file: "db1-user.txt"
+    file: "db1-secret/db1-user.txt"
   db1-pwd-user:
-    file: "db1-pwd-user.txt"
+    file: "db1-secret/db1-pwd-user.txt"
