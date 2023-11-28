@@ -8,8 +8,8 @@ Cette infrastructure doit répondre au principe de l'IaC et être facilement red
 	- [ ] Peut-être améliorer la sécurité de traefik car découverte `--providers.docker=true` et il serait peut-être plus pertinent de passer par l'API.
 	- [ ] fail2ban sur le ssh de l'host ? = ansible et en profiter au début pour installer docker et uploader le fichier ?
 	- [ ] Qu'existe-t-il au niveau du container ?
-- [ ] Certbot
 - [ ] Séparer les docker-compose et merge les lez fichiers.
+- [ ] Certbot
 - [ ] Comment assurer les backups ?
 - [ ] Process de restauration
 - [ ] Process d'upgrade
