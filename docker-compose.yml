@@ -23,14 +23,19 @@ services:
     volumes:
       - "db-data-1:/var/lib/mysql"
     environment:
-      - "MYSQL_ROOT_PASSWORD=somewordpress"
-      - "MYSQL_DATABASE=wordpress"
-      - "MYSQL_USER=wordpress"
-      - "MYSQL_PASSWORD=wordpress"
+      - "MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db1-root"
+      - "MYSQL_DATABASE_FILE=/run/secrets/db1-db"
+      - "MYSQL_USER_FILE=/run/secrets/db1-user"
+      - "MYSQL_PASSWORD_FILE=/run/secrets/db1-pwd-user"
     networks:
       - "wp1-net"
     labels:
       - "traefik.enable=false"
+    secrets:
+      - "db1-root"
+      - "db1-db"
+      - "db1-user"
+      - "db1-pwd-user"
 
   wordpress-1:
     depends_on: 
@@ -42,9 +47,9 @@ services:
       - "wp-data-1:/var/www/html"
     environment:
       - "WORDPRESS_DB_HOST=mariadb-1"
-      - "WORDPRESS_DB_USER=wordpress"
-      - "WORDPRESS_DB_PASSWORD=wordpress"
-      - "WORDPRESS_DB_NAME=wordpress"
+      - "WORDPRESS_DB_USER_FILE=/run/secrets/db1-user"
+      - "WORDPRESS_DB_PASSWORD_FILE=/run/secrets/db1-pwd-user"
+      - "WORDPRESS_DB_NAME_FILE=/run/secrets/db1-db"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.wordpress-1.rule=Host(`site1.com`)"  # Faire l'enregistrement sur le fichier host de site1.com avec l'IP du host
@@ -52,6 +57,34 @@ services:
       - "traefik.http.routers.wordpress-1.tls=true"
     networks:
       - "wp1-net"
+    secrets:
+      - "db1-db"
+      - "db1-user"
+      - "db1-pwd-user"
+
+  wordpress-cli-1:
+    depends_on:
+      - "mariadb-1"
+      - "wordpress-1"
+    image: "wordpress:cli"
+    container_name: "wordpress-cli-1"
+    environment:
+      - "WORDPRESS_DB_HOST=mariadb-1"
+      - "WORDPRESS_DB_USER_FILE=/run/secrets/db1-user"
+      - "WORDPRESS_DB_PASSWORD_FILE=/run/secrets/db1-pwd-user"
+      - "WORDPRESS_DB_NAME_FILE=/run/secrets/db1-db"
+    volumes:
+      - "wp-data-1:/var/www/html"
+    entrypoint: sh
+    command: -c 'sleep 20; wp core install --url="site1.com" --title="toto" --admin_name=toto --admin_password="toto" --admin_email=toto@toto.com'
+    networks:
+      wp1-net:
+    labels:
+      - "traefik.enable=false"
+    secrets:
+      - "db1-db"
+      - "db1-user"
+      - "db1-pwd-user"
 
   mariadb-2:
     image: "mariadb:11.1.3-jammy"
@@ -60,14 +93,19 @@ services:
     volumes:
       - "db-data-2:/var/lib/mysql"
     environment:
-      - "MYSQL_ROOT_PASSWORD=somewordpress"
-      - "MYSQL_DATABASE=wordpress"
-      - "MYSQL_USER=wordpress"
-      - "MYSQL_PASSWORD=wordpress"
+      - "MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db2-root"
+      - "MYSQL_DATABASE_FILE=/run/secrets/db2-db"
+      - "MYSQL_USER_FILE=/run/secrets/db2-user"
+      - "MYSQL_PASSWORD_FILE=/run/secrets/db2-pwd-user"
     networks:
       - "wp2-net"
     labels:
       - "traefik.enable=false"
+    secrets:
+      - "db2-root"
+      - "db2-db"
+      - "db2-user"
+      - "db2-pwd-user"
 
   wordpress-2:
     depends_on: 
@@ -79,9 +117,9 @@ services:
       - "wp-data-2:/var/www/html"
     environment:
       - "WORDPRESS_DB_HOST=mariadb-2"
-      - "WORDPRESS_DB_USER=wordpress"
-      - "WORDPRESS_DB_PASSWORD=wordpress"
-      - "WORDPRESS_DB_NAME=wordpress"
+      - "WORDPRESS_DB_USER_FILE=/run/secrets/db2-user"
+      - "WORDPRESS_DB_PASSWORD_FILE=/run/secrets/db2-pwd-user"
+      - "WORDPRESS_DB_NAME_FILE=/run/secrets/db2-db"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.wordpress-2.rule=Host(`site2.com`)"  # Faire l'enregistrement sur le fichier host de site1.com avec l'IP du host
@@ -89,26 +127,10 @@ services:
       - "traefik.http.routers.wordpress-2.tls=true"
     networks:
       - "wp2-net"
-
-  wordpress-cli-1:
-    depends_on:
-      - "mariadb-1"
-      - "wordpress-1"
-    image: "wordpress:cli"
-    container_name: "wordpress-cli-1"
-    environment:
-      - "WORDPRESS_DB_HOST=mariadb-1"
-      - "WORDPRESS_DB_USER=wordpress"
-      - "WORDPRESS_DB_PASSWORD=wordpress"
-      - "WORDPRESS_DB_NAME=wordpress"
-    volumes:
-      - "wp-data-1:/var/www/html"
-    entrypoint: sh
-    command: -c 'sleep 20; wp core install --url="site1.com" --title="toto" --admin_name=toto --admin_password="toto" --admin_email=toto@toto.com'
-    networks:
-      wp1-net:
-    labels:
-      - "traefik.enable=false"
+    secrets:
+      - "db2-db"
+      - "db2-user"
+      - "db2-pwd-user"
 
   wordpress-cli-2:
     depends_on:
@@ -118,9 +140,9 @@ services:
     container_name: "wordpress-cli-2"
     environment:
       - "WORDPRESS_DB_HOST=mariadb-2"
-      - "WORDPRESS_DB_USER=wordpress"
-      - "WORDPRESS_DB_PASSWORD=wordpress"
-      - "WORDPRESS_DB_NAME=wordpress"
+      - "WORDPRESS_DB_USER_FILE=/run/secrets/db2-user"
+      - "WORDPRESS_DB_PASSWORD_FILE=/run/secrets/db2-pwd-user"
+      - "WORDPRESS_DB_NAME_FILE=/run/secrets/db2-db"
     volumes:
       - "wp-data-2:/var/www/html"
     entrypoint: sh
@@ -129,6 +151,11 @@ services:
       wp2-net:
     labels:
       - "traefik.enable=false"
+    secrets:
+      - "db2-db"
+      - "db2-user"
+      - "db2-pwd-user"
+
 
 volumes:
   db-data-1:
@@ -139,3 +166,21 @@ volumes:
 networks:
   wp1-net:
   wp2-net:
+
+secrets:
+  db1-root:
+    file: "db1-secret/db1-root.txt"
+  db1-db:
+    file: "db1-secret/db1-db.txt"
+  db1-user:
+    file: "db1-secret/db1-user.txt"
+  db1-pwd-user:
+    file: "db1-secret/db1-pwd-user.txt"
+  db2-root:
+    file: "db2-secret/db2-root.txt"
+  db2-db:
+    file: "db2-secret/db2-db.txt"
+  db2-user:
+    file: "db2-secret/db2-user.txt"
+  db2-pwd-user:
+    file: "db2-secret/db2-pwd-user.txt"
