@@ -1,0 +1,87 @@
+services:
+  mariadb-2:
+    image: "mariadb:11.1.3-jammy"
+    restart: "always"
+    container_name: "mariadb-2"
+    volumes:
+      - "db-data-2:/var/lib/mysql"
+    environment:
+      - "MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db2-root"
+      - "MYSQL_DATABASE_FILE=/run/secrets/db2-db"
+      - "MYSQL_USER_FILE=/run/secrets/db2-user"
+      - "MYSQL_PASSWORD_FILE=/run/secrets/db2-pwd-user"
+    networks:
+      - "wp2-net"
+    labels:
+      - "traefik.enable=false"
+    secrets:
+      - "db2-root"
+      - "db2-db"
+      - "db2-user"
+      - "db2-pwd-user"
+
+  wordpress-2:
+    depends_on: 
+      - "mariadb-2"
+    image: "wordpress:6.4.1"
+    restart: "always"
+    container_name: "wordpress-2"
+    volumes:
+      - "wp-data-2:/var/www/html"
+    environment:
+      - "WORDPRESS_DB_HOST=mariadb-2"
+      - "WORDPRESS_DB_USER_FILE=/run/secrets/db2-user"
+      - "WORDPRESS_DB_PASSWORD_FILE=/run/secrets/db2-pwd-user"
+      - "WORDPRESS_DB_NAME_FILE=/run/secrets/db2-db"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress-2.rule=Host(`site2.com`)"  # Faire l'enregistrement sur le fichier host de site1.com avec l'IP du host
+      - "traefik.http.services.wordpress-2.loadbalancer.server.port=80"
+      - "traefik.http.routers.wordpress-2.tls=true"
+    networks:
+      - "wp2-net"
+    secrets:
+      - "db2-db"
+      - "db2-user"
+      - "db2-pwd-user"
+
+  wordpress-cli-2:
+    depends_on:
+      - "mariadb-2"
+      - "wordpress-2"
+    image: "wordpress:cli"
+    container_name: "wordpress-cli-2"
+    environment:
+      - "WORDPRESS_DB_HOST=mariadb-2"
+      - "WORDPRESS_DB_USER_FILE=/run/secrets/db2-user"
+      - "WORDPRESS_DB_PASSWORD_FILE=/run/secrets/db2-pwd-user"
+      - "WORDPRESS_DB_NAME_FILE=/run/secrets/db2-db"
+    volumes:
+      - "wp-data-2:/var/www/html"
+    entrypoint: sh
+    command: -c 'sleep 20; wp core install --url="site2.com" --title="tata" --admin_name=tata --admin_password="tata" --admin_email=tata@tata.com'
+    networks:
+      wp2-net:
+    labels:
+      - "traefik.enable=false"
+    secrets:
+      - "db2-db"
+      - "db2-user"
+      - "db2-pwd-user"
+
+volumes:
+  db-data-2:
+  wp-data-2:
+
+networks:
+  wp2-net:
+
+secrets:
+  db2-root:
+    file: "db2-secret/db2-root.txt"
+  db2-db:
+    file: "db2-secret/db2-db.txt"
+  db2-user:
+    file: "db2-secret/db2-user.txt"
+  db2-pwd-user:
+    file: "db2-secret/db2-pwd-user.txt"

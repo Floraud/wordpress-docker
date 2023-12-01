@@ -3,15 +3,21 @@ L'objectif est d'avoir une infrastructure minimaliste disposant du maximum de co
 Cette infrastructure doit répondre au principe de l'IaC et être facilement redéployable, pour migrer (on premise par exemple) ou en cas d'incident, avec le moins d'actions manuelles possibles.
 
 # To-do list
-- [ ] Séparer les docker-compose et merge les les fichiers.
 - [ ] Certbot
-- [ ] Sécurité ?
-	- [ ] Peut-être améliorer la sécurité de traefik car découverte `--providers.docker=true` et il serait peut-être plus pertinent de passer par l'API.
-	- [ ] fail2ban sur le ssh de l'host ? = ansible et en profiter au début pour installer docker et uploader le fichier ?
-	- [ ] Qu'existe-t-il au niveau du container ?
+	- [ ] enregister le DNS sur mon IP publique juste avant
 - [ ] Comment assurer les backups ?
+		- Seul les volumes nous intéresse ?
+		- Où sont sauvegardés mes thèmes wordpress ?
 - [ ] Process de restauration
 - [ ] Process d'upgrade
+	- suffit-t-il que je mette à jour la version du docker-compose et le relance ?
+- [ ] Sécurité
+	- [ ] Étudier Docker Bench for Security
+	- [ ] Peut-être améliorer la sécurité de traefik car découverte `--providers.docker=true` et il serait peut-être plus pertinent de passer par l'API docker.
+- [ ] Déploiement automatique sur une Alma avec Ansible ?
+	- [ ] Installer docker
+	- [ ] Uploader les fichiers
+	- [ ] Créer l'install
 
 # Architecture
 ## Diagramme
@@ -24,67 +30,26 @@ subgraph container
 	traefik---wordpress_1;
 	traefik---wordpress_2;
 
-	subgraph docker_network_2
-		wordpress_2---mariadb_2;
-	end
-
 	subgraph docker_network_1
 		wordpress_1---mariadb_1;
+	end
+
+	subgraph docker_network_2
+		wordpress_2---mariadb_2;
 	end
 end
     
 ```
-
-## Network flow Matrix
-***WIP***
-
-|Source|Destination  |Port          |Flux          |
-|------|-------------|--------------|--------------|
-|any   |server       |tcp/80 tcp/443|accès web     |
-|any   |server       |tcp/22        |administration|
-|server|any          |tcp/80 tcp/443|repo update   |
-|server|1.1.1.1 other|tcp/53 udp/53 |DNS           |
-|server|timesrv1 et 2|udp/123       |NTP           |
-
-
 ## Images docker
 - **Explicitez le numéro de version**
 
 ### Reverse Proxy
 - Traefik > nginx car le renouvellement de certificat est pensé dans Traefik et que c'est une solution bien adaptée aux containers.
 
-## Questionnement
-- MariaDB en container ? **OK pour  site simple à faible criticité pour optimiser coût**
-	- **Pros**
-		- Une Mariadb par appli recommandé
-		- Facilite le redéploiement
-	- **Cons**
-		- Pas pour de la grosse infra
-		- Demande de gérer la partie volume
-
-## Hébergement
-- **VPS**
-	- **Pulseheberg**
-	- **~~OVH~~**
-		- 1,10 € en plus par mois pour les snapshots
-		- Moins de puissance de calcul pour plus cher que Pulseheberg
-- **~~On premise~~**
-	- Demande à minima Proxmox (cluster ?) avec Opnsense devant
-	- Nécessite calcul prix éléctricité au kwh en plus de l'équipement
-
 # Administration
 ## Déploiement
-- Lancez le déploiement des containers à l'aide de `sudo docker-compose up -d`
-
-## Process d'Upgrade
-**A tester** :
-- Modifiez le fichier docker-compose.yml avec les nouvelles versions (tous les trimestres)
-- pour arrêter les anciens containers et en créer de nouveaux :  `sudo docker-compose down && sudo docker-compose up -d`
-
-## Process de Backup
-- Ne concerne que les volumes
-
-## Process de Restauration
+- Lancez le déploiement des containers à l'aide de `sudo docker compose -f docker-compose.yml docker-compose-site1.yml up -d`
+- Vous pouvez lancer le site2 à l'aide de `sudo docker compose docker-compose-site2.yml up -d`
 
 <details><summary>
 
@@ -102,5 +67,5 @@ end
 - Voir les logs d'un container : `sudo docker logs <name>`
 - Contrôler les containers toujours présents : `sudo docker ps`
 - Contrôler les volumes toujours présents : `sudo docker volume ls`
-- Relancer les containers : `sudo docker-compose up -d`
-- **Attention !** Cette commande est faite pour tout supprimer et recréer, containers comme volumes : `sudo docker-compose down --remove-orphans && sudo docker volume prune -f && sudo docker network prune -f && sudo docker compose up`
+- Relancer les containers : `sudo docker compose up -d`
+- **Attention !** Cette commande est faite pour tout supprimer et recréer, containers comme volumes : `sudo docker compose down --remove-orphans && sudo docker volume prune -f && sudo docker network prune -f && sudo docker compose up`
