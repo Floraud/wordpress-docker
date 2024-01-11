@@ -54,8 +54,8 @@ end
 > [!TIP]
 > Vous pourrez boire un café après avoir lancé la commande parce qu'une fois que vous retrouvez la main, il faut compter 40 secondes pour que le serveur WordPress soit préconfiguré par wordpress:cli. C'est le temps nécessaire sur mon serveur pour que MariaDB et WordPress soient fonctionnels et que wordpress:cli fasse son travail. Vous pouvez diminuez le sleep time dans le code ou commentez wordpress:cli pour finir la configuration à la main.
 
-- Dans le dossier, lancez le déploiement des containers à l'aide de `docker compose -f docker-compose.yml docker-compose-site1.yml up -d`
-- Vous pouvez lancer le site2 à l'aide de `docker compose docker-compose-site2.yml up -d`
+- Dans le dossier, lancez le déploiement des containers à l'aide de `docker compose -f docker-compose.yml -f docker-compose-site1.yml up -d`
+- Vous pouvez lancer le site2 à l'aide de `docker compose -f docker-compose-site2.yml up -d`
 
 <details><summary>
 
