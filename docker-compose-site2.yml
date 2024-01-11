@@ -35,9 +35,9 @@ services:
       - "WORDPRESS_DB_NAME_FILE=/run/secrets/db2-db"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.wordpress-2.rule=Host(`site2.com`)"  # Faire l'enregistrement sur le fichier host de site1.com avec l'IP du host
-      - "traefik.http.services.wordpress-2.loadbalancer.server.port=80"
-      - "traefik.http.routers.wordpress-2.tls=true"
+      - "traefik.http.routers.wordpress-2.rule=Host(`site2.floraud.fr`)"  # Do not forget to change this line and have your dns record
+      - "traefik.http.routers.wordpress-2.entrypoints=websecure"
+      - "traefik.http.routers.wordpress-2.tls.certresolver=myresolver"
     networks:
       - "wp2-net"
     secrets:
@@ -59,7 +59,7 @@ services:
     volumes:
       - "wp-data-2:/var/www/html"
     entrypoint: sh
-    command: -c 'sleep 20; wp core install --url="site2.com" --title="tata" --admin_name=tata --admin_password="tata" --admin_email=tata@tata.com'
+    command: -c 'sleep 40; wp core install --url="site2.floraud.fr" --title="tata" --admin_name=tata --admin_password="tata" --admin_email=tata@tata.com' # You have to change url, title, admin_name, admin_password and admin_email. After deployment, do not forget to change admin_password
     networks:
       wp2-net:
     labels:
@@ -73,9 +73,6 @@ volumes:
   db-data-2:
   wp-data-2:
 
-networks:
-  wp2-net:
-
 secrets:
   db2-root:
     file: "db2-secret/db2-root.txt"
@@ -85,3 +82,6 @@ secrets:
     file: "db2-secret/db2-user.txt"
   db2-pwd-user:
     file: "db2-secret/db2-pwd-user.txt"
+
+networks:
+  wp2-net:

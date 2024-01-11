@@ -1,23 +1,34 @@
 services:
   traefik:
-    image: "traefik:v2.10.5"
-    restart: "always"
+    image: "traefik:v2.10"
+    container_name: "traefik"
     command:
-      # A désactiver pour la mise en prod
-      # - "--api.insecure=true" 
-      - "--providers.docker=true"  # Voir pour peut-être désactiver pour la mise en prod et passer par l'API docker si plus sécurisé
-      - "--entrypoints.web-secure.address=:443"
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      # Redirection vers l'https
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entryPoints.web.http.redirections.entrypoint.scheme=https"
+      # HTTPS
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=exemple@domain.com" # Do not forget to modify mail address
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
       - "443:443"
-      # Port pour l'interface web de Traefik à désactiver pour la mise en prod
-      # - "8080:8080"
+      #- "8080:8080"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
     networks:
       wp1-net:
       wp2-net:
-
+  
 networks:
   wp1-net:
   wp2-net:

@@ -35,16 +35,16 @@ services:
       - "WORDPRESS_DB_NAME_FILE=/run/secrets/db1-db"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.wordpress-1.rule=Host(`site1.com`)"  # Faire l'enregistrement sur le fichier host de site1.com avec l'IP du host
-      - "traefik.http.services.wordpress-1.loadbalancer.server.port=80"  # Sert uniquement à rediriger vers le port 80
-      - "traefik.http.routers.wordpress-1.tls=true"
+      - "traefik.http.routers.wordpress-1.rule=Host(`site1.floraud.fr`)"  # Do not forget to change this line and have your dns record
+      - "traefik.http.routers.wordpress-1.entrypoints=websecure"
+      - "traefik.http.routers.wordpress-1.tls.certresolver=myresolver"
     networks:
       - "wp1-net"
     secrets:
       - "db1-db"
       - "db1-user"
       - "db1-pwd-user"
-
+  
   wordpress-cli-1:
     depends_on:
       - "mariadb-1"
@@ -59,7 +59,7 @@ services:
     volumes:
       - "wp-data-1:/var/www/html"
     entrypoint: sh
-    command: -c 'sleep 20; wp core install --url="site1.com" --title="toto" --admin_name=toto --admin_password="toto" --admin_email=toto@toto.com'
+    command: -c 'sleep 40; wp core install --url="site1.floraud.fr" --title="toto" --admin_name=toto --admin_password="toto" --admin_email=toto@toto.com' # You have to change url, title, admin_name, admin_password and admin_email. After deployment, do not forget to change admin_password
     networks:
       wp1-net:
     labels:
@@ -73,9 +73,6 @@ volumes:
   db-data-1:
   wp-data-1:
 
-networks:
-  wp1-net:
-
 secrets:
   db1-root:
     file: "db1-secret/db1-root.txt"
@@ -85,3 +82,6 @@ secrets:
     file: "db1-secret/db1-user.txt"
   db1-pwd-user:
     file: "db1-secret/db1-pwd-user.txt"
+
+networks:
+  wp1-net:
