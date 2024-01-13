@@ -3,7 +3,7 @@ L'objectif est d'avoir une infrastructure minimaliste disposant du maximum de co
 Cette infrastructure doit répondre au principe de l'IaC et être facilement redéployable, pour migrer (on premise par exemple) ou en cas d'incident, avec le moins d'actions manuelles possibles.
 
 > [!IMPORTANT]
-> Ce repository a seulement été testé dans un cadre de PoC sur une machine Linux Debian 12 fraîchement installée et en utilisant le compte root.
+> Ce repository a seulement été testé dans un cadre de PoC sur des serveurs Linux Debian 12 et Alma 8.5 fraîchement installés et en utilisant le compte root.
 
 # Architecture
 ## Diagramme
