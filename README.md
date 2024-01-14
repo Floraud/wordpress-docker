@@ -1,5 +1,5 @@
 # Présentation
-L'objectif est d'avoir une infrastructure minimaliste disposant du maximum de containers WordPress et MariaDB derrière un container reverse-proxy pour exposer des sites en https vec certificat Let's Encrypt à moindre coût.
+L'objectif est d'avoir une infrastructure minimaliste disposant du maximum de containers WordPress et MariaDB derrière un container reverse-proxy pour exposer des sites en https avec certificat Let's Encrypt à moindre coût.
 Cette infrastructure doit répondre au principe de l'IaC et être facilement redéployable, pour migrer (on premise par exemple) ou en cas d'incident, avec le moins d'actions manuelles possibles.
 
 > [!IMPORTANT]
