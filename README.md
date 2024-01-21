@@ -10,22 +10,24 @@ Cette infrastructure doit répondre au principe de l'IaC et être facilement red
 ```mermaid
 graph TD;
 
-user---traefik;
-
 subgraph server
-	traefik---wordpress_1;
-	traefik---wordpress_2;
 
 	subgraph docker_network_1
-		wordpress_1---mariadb_1;
+		mariadb_1---wordpress_1;
 	end
 
 	subgraph docker_network_2
-		wordpress_2---mariadb_2;
+		mariadb_2---wordpress_2;
 	end
-end
-    
+
+	wordpress_1---traefik;
+	wordpress_2---traefik;
+
+	end
+
+traefik---user;
 ```
+
 ## Images docker
 **À maintenir à jour**
 - traefik:v2.10
